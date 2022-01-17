@@ -66,15 +66,22 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
 
   const i = new i18n(lang);
 
+  const getFieldValue = (field: Field, row: any) => {
+    if (!field.formatter) {
+      return row[field.identifier];
+    }
+    return field.formatter(row[field.identifier], field.name, row);
+  }
+
   const asc = (sotData: any[], field: Field) => {
     return sotData.sort(
-      (a, b) => (a[field.identifier] > b[field.identifier] ? 1 : -1),
+      (a, b) => (getFieldValue(field, a) > getFieldValue(field, b) ? 1 : -1),
     ).map((i) => i);
   };
 
   const desc = (sortData: any[], field: Field) => {
     return sortData.sort(
-      (a, b) => (a[field.identifier] < b[field.identifier] ? 1 : -1),
+      (a, b) => (getFieldValue(field, a) < getFieldValue(field, b) ? 1 : -1),
     ).map((i) => i);
   };
 
@@ -99,10 +106,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       const enriched = data.map((item) => {
         return {
           ...item,
-          sortHash: fields.map((field: Field) =>
-            `${field.formatter
-              ? field.formatter(item[field.identifier], field.name, item)
-              : item[field.identifier]}`.toLowerCase(),
+          sortHash: fields.map((field: Field) => `${getFieldValue(field, item)}`.toLowerCase(),
           ).join(' '),
         }},
       ).filter((item) => item.sortHash.includes(filter.toLocaleLowerCase()) || filter === '');
@@ -179,9 +183,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                     return (
                       <tr key={idx}>
                         { fields.map((field, i) => {
-                          const val = field.formatter
-                            ? field.formatter(row[field.identifier], field.identifier, row)
-                            : row[field.identifier];
+                          const val = getFieldValue(field, row);
                           if (editable && editable.index === idx && editable.name === field.identifier) {
                             return (
                               <td style={{ width: field.width || 150 }} key={i}>
