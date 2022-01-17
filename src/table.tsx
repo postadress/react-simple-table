@@ -144,7 +144,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
           <Col className='d-flex flex-row-reverse mt-2'>
             {tableData?.length}
             {' '}
-            Einträge
+            Results
           </Col>
         </Row>
         <Row>
