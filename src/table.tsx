@@ -96,14 +96,17 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     }
 
     if (data) {
-      const enriched = data.map(
-        (item) => ({
+      const enriched = data.map((item) => {
+        return {
           ...item,
-          sortHash: Object.entries(item).map(
-            (i: any) => `${i[1]}`.toLowerCase(),
+          sortHash: fields.map((field: Field) =>
+            `${field.formatter
+              ? field.formatter(item[field.identifier], field.name, item)
+              : item[field.identifier]}`.toLowerCase(),
           ).join(' '),
-        }),
+        }},
       ).filter((item) => item.sortHash.includes(filter.toLocaleLowerCase()) || filter === '');
+
       if (sortedBy) {
         if (sortedBy.dir === 'a') {
           const sorted = asc(enriched, sortedBy.field);
