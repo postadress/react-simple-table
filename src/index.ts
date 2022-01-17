@@ -1,1 +1,1 @@
-export { SimpleTable } from "./table";
+export { SimpleTable, Field } from "./table";
