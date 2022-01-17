@@ -4,6 +4,7 @@ import React, {
   FC, MutableRefObject, useEffect, useRef, useState,
 } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
+import { i18n } from './languages/i18n';
 
 export interface Field {
   name: string;
@@ -19,6 +20,7 @@ export interface Field {
 export interface DatatableProps {
   fields: Field[]
   data: any[],
+  lang?: string,
 }
 
 const useIntersection = (ref: MutableRefObject<Element | null>) => {
@@ -53,7 +55,7 @@ const useIntersection = (ref: MutableRefObject<Element | null>) => {
 };
 
 export const SimpleTable: FC<DatatableProps> = (props) => {
-  const { fields, data } = props;
+  const { fields, data, lang = 'en' } = props;
   const [tableData, setTableData] = useState<any[]>();
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
   const [filter, setFilter] = useState<string>('');
@@ -61,6 +63,8 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   const [maxIdx, setMaxId] = useState<number>(10);
   const ref = useRef(null);
   const inViewPort = useIntersection(ref);
+
+  const i = new i18n(lang);
 
   const asc = (sotData: any[], field: Field) => {
     return sotData.sort(
@@ -144,7 +148,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
           <Col className='d-flex flex-row-reverse mt-2'>
             {tableData?.length}
             {' '}
-            Results
+            { i('results') }
           </Col>
         </Row>
         <Row>
