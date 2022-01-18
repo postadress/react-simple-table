@@ -104,13 +104,13 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
 
   const asc = (sotData: any[], field: Field) => {
     return sotData.sort(
-      (a, b) => (getFieldValue(field, a) > getFieldValue(field, b) ? 1 : -1),
+      (a, b) => (getRawValue(field, a) > getRawValue(field, b) ? 1 : -1),
     ).map((i) => i);
   };
 
   const desc = (sortData: any[], field: Field) => {
     return sortData.sort(
-      (a, b) => (getFieldValue(field, a) < getFieldValue(field, b) ? 1 : -1),
+      (a, b) => (getRawValue(field, a) < getRawValue(field, b) ? 1 : -1),
     ).map((i) => i);
   };
 
