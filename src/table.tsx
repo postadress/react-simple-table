@@ -220,7 +220,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                     return (
                       <th
                         scope="col"
-                        style={!field.disableSorting && { cursor: 'pointer' }}
+                        style={!field.disableSorting ? { cursor: 'pointer' } : {}}
                         key={idx}
                         onClick={!field.disableSorting ? () => sortData(field) : undefined}
                       >
