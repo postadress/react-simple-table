@@ -97,7 +97,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       return row[field.identifier];
     }
     if (row[field.identifier]) {
-      return row[field.identifier].getRawValue(row[field.identifier], field.identifier, row);
+      return field.getRawValue(row[field.identifier], field.identifier, row);
     }
     return field.getRawValue('', field.identifier, row);
   };
