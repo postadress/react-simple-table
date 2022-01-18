@@ -1,8 +1,8 @@
-import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, {
-  FC, MutableRefObject, useEffect, useRef, useState,
+  FC, Fragment, MutableRefObject, useEffect, useRef, useState,
 } from 'react';
+import { faAngleDown, faAngleUp, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Col, Container, Row } from 'react-bootstrap';
 import { i18n } from './languages/i18n';
 
@@ -20,6 +20,7 @@ export interface Field {
 export interface DatatableProps {
   fields: Field[]
   data: any[],
+  onExpand?: (idx: number, row: any) => JSX.Element,
   lang?: string,
 }
 
@@ -55,12 +56,14 @@ const useIntersection = (ref: MutableRefObject<Element | null>) => {
 };
 
 export const SimpleTable: FC<DatatableProps> = (props) => {
-  const { fields, data, lang = 'en' } = props;
+  const { fields, data, onExpand, lang = 'en' } = props;
   const [tableData, setTableData] = useState<any[]>();
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
   const [filter, setFilter] = useState<string>('');
   const [editable, setEditble] = useState<{index: number, field: Field, name: string}>();
   const [maxIdx, setMaxId] = useState<number>(10);
+  const [expanded, setExpanded] = useState<number[]>([]);
+
   const ref = useRef(null);
   const inViewPort = useIntersection(ref);
 
@@ -145,6 +148,12 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     ? <FontAwesomeIcon icon={faAngleUp} />
     : <FontAwesomeIcon icon={faAngleDown} />);
 
+  const handleExpandRow = (idx: number) => {
+    expanded.includes(idx)
+      ? setExpanded(expanded.filter(i => i !== idx))
+      : setExpanded([...expanded, idx]);
+  }
+
   return (
     <>
       <Container fluid>
@@ -163,6 +172,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
             <table className="table">
               <thead>
                 <tr>
+                  { onExpand && <th scope="col" style={{ width: 1 }} />}
                   { fields.map((field, idx) => {
                     const dirIdentifier = (field.identifier === sortedBy?.field.identifier)
                       ? getIcon()
@@ -181,32 +191,47 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                 {tableData && tableData.map((row, idx) => {
                   if (idx <= maxIdx) {
                     return (
-                      <tr key={idx}>
-                        { fields.map((field, i) => {
-                          const val = getFieldValue(field, row);
-                          if (editable && editable.index === idx && editable.name === field.identifier) {
+                      <Fragment key={idx}>
+                        <tr className='align-middle'>
+                          { onExpand &&
+                            <td style={{ width: 1, cursor: 'pointer' }} onClick={() => handleExpandRow(idx)}>
+                              {expanded.includes(idx)
+                                ? <FontAwesomeIcon icon={faMinus} />
+                                : <FontAwesomeIcon icon={faPlus} />
+                              }
+                            </td>
+                          }
+                          { fields.map((field, i) => {
+                            const val = getFieldValue(field, row);
+                            if (editable && editable.index === idx && editable.name === field.identifier) {
+                              return (
+                                <td style={{ width: field.width || 150 }} key={i}>
+                                  <input
+                                    type={field.type ? field.type : 'text'}
+                                    onChange={(e) => handleEditCell(idx, e.target.value, field)}
+                                    className="form-control"
+                                    value={val}
+                                    onBlur={() => setEditble(undefined)}
+                                  />
+                                </td>
+                              );
+                            }
                             return (
-                              <td style={{ width: field.width || 150 }} key={i}>
-                                <input
-                                  type={field.type ? field.type : 'text'}
-                                  onChange={(e) => handleEditCell(idx, e.target.value, field)}
-                                  className="form-control"
-                                  value={val}
-                                  onBlur={() => setEditble(undefined)}
-                                />
+                              <td
+                                onClick={(e) => handleClick(e, idx, row, field.identifier, field)}
+                                style={{ width: field.width || 150 }}
+                                key={i}>
+                                {val}
                               </td>
                             );
-                          }
-                          return (
-                            <td
-                              onClick={(e) => handleClick(e, idx, row, field.identifier, field)}
-                              style={{ width: field.width || 150 }}
-                              key={i}>
-                              {val}
-                            </td>
-                          );
-                        })}
-                      </tr>
+                          })}
+                        </tr>
+                        {onExpand && expanded.includes(idx) &&
+                          <tr key={`expanded_${idx}`}>
+                            <td colSpan={fields.length + 1}>{ onExpand(idx, row) }</td>
+                          </tr>
+                        }
+                      </Fragment>
                     );
                   }
                 })}

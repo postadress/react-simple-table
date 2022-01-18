@@ -7,7 +7,7 @@ export class i18n extends Function {
   mapping: {[key: string] : string};
 
   constructor(lang: string) {
-    super()
+    super();
 
     const closure: any = function() {
       switch (lang) {
