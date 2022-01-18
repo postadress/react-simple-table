@@ -6,7 +6,7 @@ import React, {
   FC, Fragment, MutableRefObject, useEffect, useRef, useState,
 } from 'react';
 import {
-  Button, Col, Container, Row,
+  Col, Container, Row,
 } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import { i18n } from './languages/i18n';
@@ -15,7 +15,8 @@ export interface Field {
   name: string;
   identifier: string;
   width?: number;
-  formatter?: (val: any, name: string, row: any[]) => string | JSX.Element;
+  formatter?: (val: any, name: string, row: any) => string | JSX.Element;
+  getRawValue?: (val: any, name: string, row: any) => string; // For filtering
   editable?: boolean;
   type?: 'button' | 'checkbox' | 'color' | 'date' | 'datetime' | 'email' | 'file' | 'hidden' |
     'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit'
@@ -91,6 +92,16 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     return field.formatter(row[field.identifier], field.name, row);
   };
 
+  const getRawValue = (field: Field, row: any) => {
+    if (!field.getRawValue) {
+      return row[field.identifier];
+    }
+    if (row[field.identifier]) {
+      return row[field.identifier].rawValue();
+    }
+    return field.getRawValue('', field.identifier, row);
+  };
+
   const asc = (sotData: any[], field: Field) => {
     return sotData.sort(
       (a, b) => (getFieldValue(field, a) > getFieldValue(field, b) ? 1 : -1),
@@ -127,7 +138,8 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
         enriched = data.map((item) => {
           return {
             ...item,
-            sortHash: fields.map((field: Field) => `${getFieldValue(field, item)}`.toLowerCase()).join(' '),
+            sortHash: fields.map(
+              (field: Field) => `${getRawValue(field, item)}`.toLowerCase()).join(' '),
           };
         }).filter((item) => item.sortHash.includes(filter.toLocaleLowerCase()) || filter === '');
       }
@@ -220,54 +232,55 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {tableData && tableData.map((row, idx) => {
-                  if (idx <= maxIdx) {
-                    return (
-                      <Fragment key={idx}>
-                        <tr className="align-middle">
-                          { onExpand
+                {tableData && tableData.slice(0, maxIdx).map((row, idx) => (
+                  <Fragment key={idx}>
+                    <tr className="align-middle">
+                      { onExpand
                             && (
-                            <td style={{ width: 1, cursor: 'pointer' }} onClick={() => handleExpandRow(idx)}>
+                            <td
+                              style={{ width: 1, cursor: 'pointer' }}
+                              onClick={() => handleExpandRow(idx)}
+                            >
                               {expanded.includes(idx)
                                 ? <FontAwesomeIcon icon={faMinus} />
                                 : <FontAwesomeIcon icon={faPlus} />}
                             </td>
                             )}
-                          { fields.map((field, i) => {
-                            const val = getFieldValue(field, row);
-                            if (editable && editable.index === idx && editable.name === field.identifier) {
-                              return (
-                                <td style={{ width: field.width || 150 }} key={i}>
-                                  <input
-                                    type={field.type ? field.type : 'text'}
-                                    onChange={(e) => handleEditCell(idx, e.target.value, field)}
-                                    className="form-control"
-                                    value={val}
-                                    onBlur={() => setEditble(undefined)}
+                      { fields.map((field, i) => {
+                        const val = getFieldValue(field, row);
+                        if (editable
+                            && editable.index === idx
+                            && editable.name === field.identifier) {
+                          return (
+                            <td style={{ width: field.width || 150 }} key={i}>
+                              <input
+                                type={field.type ? field.type : 'text'}
+                                onChange={(e) => handleEditCell(idx, e.target.value, field)}
+                                className="form-control"
+                                value={val}
+                                onBlur={() => setEditble(undefined)}
                                   />
-                                </td>
-                              );
-                            }
-                            return (
-                              <td
-                                onClick={(e) => handleClick(e, idx, row, field.identifier, field)}
-                                style={{ width: field.width || 150 }}
-                                key={i}>
-                                {val}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                        {onExpand && expanded.includes(idx)
+                            </td>
+                          );
+                        }
+                        return (
+                          <td
+                            onClick={(e) => handleClick(e, idx, row, field.identifier, field)}
+                            style={{ width: field.width || 150 }}
+                            key={i}>
+                            {val}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                    {onExpand && expanded.includes(idx)
                           && (
                           <tr key={`expanded_${idx}`}>
                             <td colSpan={fields.length + 1}>{ onExpand(idx, row) }</td>
                           </tr>
                           )}
-                      </Fragment>
-                    );
-                  }
-                })}
+                  </Fragment>
+                ))}
               </tbody>
             </table>
           </Col>
