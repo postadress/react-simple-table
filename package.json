@@ -1,6 +1,6 @@
 {
   "name": "@postadress/react-simple-table",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -11,7 +11,8 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
     "@types/react": "^17.0.3",
-    "react-bootstrap": "^2.1.1"
+    "react-bootstrap": "^2.1.1",
+    "react-router-dom": "^6.2.1"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.15.0"

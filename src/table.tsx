@@ -1,9 +1,14 @@
+import {
+  faAngleDown, faAngleUp, faMinus, faPlus,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, {
   FC, Fragment, MutableRefObject, useEffect, useRef, useState,
 } from 'react';
-import { faAngleDown, faAngleUp, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Col, Container, Row } from 'react-bootstrap';
+import {
+  Button, Col, Container, Row,
+} from 'react-bootstrap';
+import { useSearchParams } from 'react-router-dom';
 import { i18n } from './languages/i18n';
 
 export interface Field {
@@ -21,6 +26,7 @@ export interface DatatableProps {
   fields: Field[]
   data: any[],
   onExpand?: (idx: number, row: any) => JSX.Element,
+  showFilter?: boolean,
   lang?: string,
 }
 
@@ -56,10 +62,14 @@ const useIntersection = (ref: MutableRefObject<Element | null>) => {
 };
 
 export const SimpleTable: FC<DatatableProps> = (props) => {
-  const { fields, data, onExpand, lang = 'en' } = props;
+  const {
+    fields, data, onExpand, showFilter, lang = 'en',
+  } = props;
   const [tableData, setTableData] = useState<any[]>();
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
-  const [filter, setFilter] = useState<string>('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filter, setFilter] = useState<string>(searchParams.get('filter') || '');
+
   const [editable, setEditble] = useState<{index: number, field: Field, name: string}>();
   const [maxIdx, setMaxId] = useState<number>(10);
   const [expanded, setExpanded] = useState<number[]>([]);
@@ -69,12 +79,17 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
 
   const i = new i18n(lang);
 
+  const handleFilterChange = (val: string) => {
+    setSearchParams({ filter: val });
+    setFilter(val);
+  };
+
   const getFieldValue = (field: Field, row: any) => {
     if (!field.formatter) {
       return row[field.identifier];
     }
     return field.formatter(row[field.identifier], field.name, row);
-  }
+  };
 
   const asc = (sotData: any[], field: Field) => {
     return sotData.sort(
@@ -106,13 +121,16 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     }
 
     if (data) {
-      const enriched = data.map((item) => {
-        return {
-          ...item,
-          sortHash: fields.map((field: Field) => `${getFieldValue(field, item)}`.toLowerCase(),
-          ).join(' '),
-        }},
-      ).filter((item) => item.sortHash.includes(filter.toLocaleLowerCase()) || filter === '');
+      let enriched = data;
+
+      if (showFilter) {
+        enriched = data.map((item) => {
+          return {
+            ...item,
+            sortHash: fields.map((field: Field) => `${getFieldValue(field, item)}`.toLowerCase()).join(' '),
+          };
+        }).filter((item) => item.sortHash.includes(filter.toLocaleLowerCase()) || filter === '');
+      }
 
       if (sortedBy) {
         if (sortedBy.dir === 'a') {
@@ -150,18 +168,27 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
 
   const handleExpandRow = (idx: number) => {
     expanded.includes(idx)
-      ? setExpanded(expanded.filter(i => i !== idx))
+      ? setExpanded(expanded.filter((i) => i !== idx))
       : setExpanded([...expanded, idx]);
-  }
+  };
 
   return (
     <>
       <Container fluid>
         <Row>
-          <Col>
-            <input className="form-control mb-3" placeholder="Filter" type="text" onChange={(v) => setFilter(v.target.value)} />
-          </Col>
-          <Col className='d-flex flex-row-reverse mt-2'>
+          { showFilter
+            && (
+            <Col>
+              <input
+                className="form-control mb-3"
+                placeholder="Filter"
+                value={filter}
+                type="text"
+                onChange={(v) => handleFilterChange(v.target.value)}
+              />
+            </Col>
+            )}
+          <Col className="d-flex flex-row-reverse mt-2">
             {tableData?.length}
             {' '}
             { i('results') }
@@ -178,7 +205,12 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                       ? getIcon()
                       : '';
                     return (
-                      <th scope="col" style={{ cursor: 'pointer' }} key={idx} onClick={() => sortData(field)}>
+                      <th
+                        scope="col"
+                        style={{ cursor: 'pointer' }}
+                        key={idx}
+                        onClick={() => sortData(field)}
+                      >
                         {field.name}
                         {' '}
                         {dirIdentifier}
@@ -192,15 +224,15 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                   if (idx <= maxIdx) {
                     return (
                       <Fragment key={idx}>
-                        <tr className='align-middle'>
-                          { onExpand &&
+                        <tr className="align-middle">
+                          { onExpand
+                            && (
                             <td style={{ width: 1, cursor: 'pointer' }} onClick={() => handleExpandRow(idx)}>
                               {expanded.includes(idx)
                                 ? <FontAwesomeIcon icon={faMinus} />
-                                : <FontAwesomeIcon icon={faPlus} />
-                              }
+                                : <FontAwesomeIcon icon={faPlus} />}
                             </td>
-                          }
+                            )}
                           { fields.map((field, i) => {
                             const val = getFieldValue(field, row);
                             if (editable && editable.index === idx && editable.name === field.identifier) {
@@ -226,11 +258,12 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                             );
                           })}
                         </tr>
-                        {onExpand && expanded.includes(idx) &&
+                        {onExpand && expanded.includes(idx)
+                          && (
                           <tr key={`expanded_${idx}`}>
                             <td colSpan={fields.length + 1}>{ onExpand(idx, row) }</td>
                           </tr>
-                        }
+                          )}
                       </Fragment>
                     );
                   }
