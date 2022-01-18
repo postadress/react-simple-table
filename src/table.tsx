@@ -18,6 +18,7 @@ export interface Field {
   formatter?: (val: any, name: string, row: any) => string | JSX.Element;
   getRawValue?: (val: any, name: string, row: any) => string; // For filtering
   editable?: boolean;
+  disableSorting?: boolean,
   type?: 'button' | 'checkbox' | 'color' | 'date' | 'datetime' | 'email' | 'file' | 'hidden' |
     'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit'
     | 'tel' | 'text' | 'time' | 'url' | 'week'
@@ -221,7 +222,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                         scope="col"
                         style={{ cursor: 'pointer' }}
                         key={idx}
-                        onClick={() => sortData(field)}
+                        onClick={!field.disableSorting ? () => sortData(field) : undefined}
                       >
                         {field.name}
                         {' '}
