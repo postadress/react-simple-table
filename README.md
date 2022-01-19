@@ -79,4 +79,8 @@ export const Component: FC = () => {
 
 ```
 
+The above example will lead to a table like this:
+
+![React Simple Table example](https://github.com/postadress/react-simple-table/blob/master/table.png?raw=true)
+
 Contributions are welcome!
