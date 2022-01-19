@@ -18,6 +18,8 @@ npm install @postadress/react-simple-table
 
 ## Usage
 
+React Simple Table uses the location for storing filter strings. Therefore it mus be used inside a Router component.
+
 ```js
 import React, { FC } from 'react';
 import { SimpleTable } from '@postadress/react-simple-table';
