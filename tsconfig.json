@@ -9,6 +9,6 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "./package.json"],
   "exclude": ["node_modules"]
 }
