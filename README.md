@@ -23,34 +23,32 @@ import React, { FC } from 'react';
 import { SimpleTable } from '@postadress/react-simple-table';
 import { Field } from '@postadress/react-simple-table/dist/table';
 
-
 export const Component: FC = () => {
   const data = [
-      {
-          id: 1,
-          firstName: 'Johnny',
-          lastName: 'Lawrence',
-          age: 50,
-      },
-      {
-          id: 2,
-          firstName: 'Daniel',
-          lastName: 'LaRusso',
-          age: 50,
-      },
-      {
-          id: 3,
-          firstName: 'Miguel',
-          lastName: 'Diaz',
-          age: 17,
-      },
-      {
-          id: 4,
-          firstName: 'Samantha',
-          lastName: 'LaRusso',
-          age: 17,
-      }
-
+    {
+        id: 1,
+        firstName: 'Johnny',
+        lastName: 'Lawrence',
+        age: 50,
+    },
+    {
+        id: 2,
+        firstName: 'Daniel',
+        lastName: 'LaRusso',
+        age: 50,
+    },
+    {
+        id: 3,
+        firstName: 'Miguel',
+        lastName: 'Diaz',
+        age: 17,
+    },
+    {
+        id: 4,
+        firstName: 'Samantha',
+        lastName: 'LaRusso',
+        age: 17,
+    }
   ];
 
   const fields: Field[] = [
