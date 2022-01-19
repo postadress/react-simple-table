@@ -30,6 +30,7 @@ export interface DatatableProps {
   onExpand?: (idx: number, row: any) => JSX.Element,
   showFilter?: boolean,
   lang?: string,
+  identifier?: string,
 }
 
 const useIntersection = (ref: MutableRefObject<Element | null>) => {
@@ -63,14 +64,20 @@ const useIntersection = (ref: MutableRefObject<Element | null>) => {
   return isIntersecting;
 };
 
+const useCustomSearch = () => {
+  const [search, setSearch] = useSearchParams();
+  const searchAsObject = Object.fromEntries(search);
+  return [searchAsObject, setSearch] as const;
+}
+
 export const SimpleTable: FC<DatatableProps> = (props) => {
   const {
-    fields, data, onExpand, showFilter, lang = 'en',
+    fields, data, onExpand, showFilter, identifier = 'filter', lang = 'en',
   } = props;
   const [tableData, setTableData] = useState<any[]>();
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [filter, setFilter] = useState<string>(searchParams.get('filter') || '');
+  const [searchParams, setSearchParams] = useCustomSearch();
+  const [filter, setFilter] = useState<string>(searchParams[identifier] || '');
 
   const [editable, setEditble] = useState<{index: number, field: Field, name: string}>();
   const [maxIdx, setMaxId] = useState<number>(10);
@@ -82,7 +89,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   const i = new i18n(lang);
 
   const handleFilterChange = (val: string) => {
-    setSearchParams({ filter: val });
+    setSearchParams({...searchParams, [identifier]: val });
     setFilter(val);
   };
 
