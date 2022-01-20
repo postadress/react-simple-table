@@ -146,8 +146,14 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
         enriched = data.map((item) => {
           return {
             ...item,
-            sortHash: fields.map(
-              (field: Field) => `${getRawValue(field, item)}`.toLowerCase()).join(' '),
+            filterHash: fields.map(
+              (field: Field) => {
+                if (field.type === 'date') {
+                  return `${getFieldValue(field, item)}`.toLowerCase()
+                } else {
+                  return `${getRawValue(field, item)}`.toLowerCase()
+                }
+              }).join(' '),
           };
         }).filter((item) => item.sortHash.includes(filter.toLocaleLowerCase()) || filter === '');
       }
