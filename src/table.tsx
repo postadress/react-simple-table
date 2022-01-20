@@ -16,7 +16,8 @@ export interface Field {
   identifier: string;
   width?: number;
   formatter?: (val: any, name: string, row: any) => string | JSX.Element;
-  getRawValue?: (val: any, name: string, row: any) => string; // For filtering
+  getRawValue?: (val: any, name: string, row: any) => string;
+  getFilterValue?: (val: any, name: string, row: any) => string; // For filtering
   editable?: boolean;
   disableSorting?: boolean,
   type?: 'button' | 'checkbox' | 'color' | 'date' | 'datetime' | 'email' | 'file' | 'hidden' |
@@ -93,12 +94,22 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     setFilter(val);
   };
 
-  const getFieldValue = (field: Field, row: any) => {
+  const getDisplayValue = (field: Field, row: any) => {
     if (!field.formatter) {
       return row[field.identifier];
     }
     return field.formatter(row[field.identifier], field.name, row);
   };
+
+  const getFilterValue = (field: Field, row: any) => {
+    if (!field.getFilterValue) {
+      return row[field.identifier];
+    }
+    if (row[field.identifier]) {
+      return field.getFilterValue(row[field.identifier], field.identifier, row);
+    }
+    return field.getFilterValue('', field.identifier, row);
+  }
 
   const getRawValue = (field: Field, row: any) => {
     if (!field.getRawValue) {
@@ -146,14 +157,8 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
         enriched = data.map((item) => {
           return {
             ...item,
-            filterHash: fields.map(
-              (field: Field) => {
-                if (field.type === 'date') {
-                  return `${getFieldValue(field, item)}`.toLowerCase()
-                } else {
-                  return `${getRawValue(field, item)}`.toLowerCase()
-                }
-              }).join(' '),
+            sortHash: fields.map(
+              (field: Field) => `${getFilterValue(field, item)}`.toLowerCase()).join(' '),
           };
         }).filter((item) => item.sortHash.includes(filter.toLocaleLowerCase()) || filter === '');
       }
@@ -261,7 +266,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                             </td>
                             )}
                       { fields.map((field, i) => {
-                        const val = getFieldValue(field, row);
+                        const val = getDisplayValue(field, row);
                         if (editable
                             && editable.index === idx
                             && editable.name === field.identifier) {
