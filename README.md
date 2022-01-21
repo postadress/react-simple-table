@@ -105,4 +105,15 @@ Interface for column definitions.
 
 [<font size="2">* 'button' | 'checkbox' | 'color' | 'date' | 'datetime' | 'email' | 'file' | 'hidden' | 'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit' | 'tel' | 'text' | 'time' | 'url' | 'week'</font>](#Content)
 
+### DatatableProps
+Interface to configure the table itself.
+
+| Property   | Type    | Optional | Default  | Purpose                                                                                                                                                          | Example                                               |
+|------------|---------|----------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| fields     | Field[] | no       |          | The field definitions to be used by the table.                                                                                                                   | fields: [{name: 'name', identifier: 'name'}]          |
+| data       | any[]   | no       |          | The data to be presented in the table.                                                                                                                           | [{name: 'Johnny Lawrence'}, {name: 'Daniel LaRusso'}] |
+| showFilter | boolean | yes      | false    | If `true` the filter widget above the table is is visible.                                                                                                       | showFilter: true                                      |
+| identifier | string  | yes      | 'filter' | Used to discriminate different tables on a page. The main purpose is: It is used in the location portion of the URL, to decide, to which table a filter belongs. | identifier: 'mainTable'                               |
+| lang       | string  | yes      | 'en'     | Used for i18n. Currently only English and German is available.                                                                                                   | lang: 'de'                                            |
+
 Contributions are welcome!
