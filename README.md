@@ -28,6 +28,27 @@ import { SimpleTable } from '@postadress/react-simple-table';
 import { Field } from '@postadress/react-simple-table/dist/table';
 
 export const Component: FC = () => {
+  const fields: Field[] = [
+    {
+      name: 'ID',
+      identifier: 'id',
+      width: 10,
+    },
+    {
+      name: 'First Name',
+      identifier: 'firstName',
+    },
+    {
+      name: 'Last Name',
+      identifier: 'lastName',
+    },
+    {
+      name: 'Age',
+      identifier: 'age',
+      type: 'number'
+    },
+  ];
+
   const data = [
     {
         id: 1,
@@ -53,27 +74,6 @@ export const Component: FC = () => {
         lastName: 'LaRusso',
         age: 17,
     }
-  ];
-
-  const fields: Field[] = [
-    {
-      name: 'ID',
-      identifier: 'id',
-      width: 10,
-    },
-    {
-      name: 'First Name',
-      identifier: 'firstName',
-    },
-    {
-      name: 'Last Name',
-      identifier: 'lastName',
-    },
-    {
-      name: 'Age',
-      identifier: 'age',
-      type: 'number'
-    },
   ];
 
   return (<SimpleTable fields={fields} data={data} />);
@@ -115,5 +115,7 @@ Interface to configure the table itself.
 | showFilter | boolean | yes      | false    | If `true` the filter widget above the table is is visible.                                                                                                       | showFilter: true                                      |
 | identifier | string  | yes      | 'filter' | Used to discriminate different tables on a page. The main purpose is: It is used in the location portion of the URL, to decide, to which table a filter belongs. | identifier: 'mainTable'                               |
 | lang       | string  | yes      | 'en'     | Used for i18n. Currently only English and German is available.                                                                                                   | lang: 'de'                                            |
+
+You can find a working example on [CodeSandbox](https://codesandbox.io/s/react-simple-table-example-4bfk3?file=/src/Table.tsx).
 
 Contributions are welcome!
