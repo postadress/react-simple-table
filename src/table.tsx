@@ -16,8 +16,8 @@ export interface Field {
   identifier: string;
   width?: number;
   formatter?: (val: any, name: string, row: any) => string | JSX.Element;
-  getRawValue?: (val: any, name: string, row: any) => string;
-  getFilterValue?: (val: any, name: string, row: any) => string; // For filtering
+  getSortValue?: (val: any, name: string, row: any) => string;
+  getFilterValue?: (val: any, name: string, row: any) => string;
   editable?: boolean;
   disableSorting?: boolean,
   type?: 'button' | 'checkbox' | 'color' | 'date' | 'datetime' | 'email' | 'file' | 'hidden' |
@@ -111,25 +111,28 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     return field.getFilterValue('', field.identifier, row);
   }
 
-  const getRawValue = (field: Field, row: any) => {
-    if (!field.getRawValue) {
-      return row[field.identifier];
+  const getSortValue = (field: Field, row: any) => {
+    if (!field.getSortValue) {
+      const val = row[field.identifier]
+      return val ? val : '';
     }
     if (row[field.identifier]) {
-      return field.getRawValue(row[field.identifier], field.identifier, row);
+      const val = field.getSortValue(row[field.identifier], field.identifier, row);
+      return val ? val : '';
     }
-    return field.getRawValue('', field.identifier, row);
+    const val = field.getSortValue('', field.identifier, row);
+    return val ? val : '';
   };
 
   const asc = (sotData: any[], field: Field) => {
     return sotData.sort(
-      (a, b) => (getRawValue(field, a) > getRawValue(field, b) ? 1 : -1),
+      (a, b) => (getSortValue(field, a) > getSortValue(field, b) ? 1 : -1),
     ).map((i) => i);
   };
 
   const desc = (sortData: any[], field: Field) => {
     return sortData.sort(
-      (a, b) => (getRawValue(field, a) < getRawValue(field, b) ? 1 : -1),
+      (a, b) => (getSortValue(field, a) < getSortValue(field, b) ? 1 : -1),
     ).map((i) => i);
   };
 

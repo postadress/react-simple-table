@@ -97,7 +97,7 @@ Interface for column definitions.
 | identifier     | string                          | no       |         | Technical identifier for the column. The `name` must not be unique, the identifier must.  | identifier: 'firstName'                    |
 | width          | number                          | yes      |         | The with of the column in px.                                                             | width: 120                                 |
 | formatter      | function                        | yes      |         | A callback function which is used to render the cell content.                             | (val, name, row) => <>{'#' + val}</>       |
-| getRawValue    | function                        | yes      |         | A callback function which is used to sort rows.                                           | (val, name, row) => dateToIso(val);        |
+| getSortValue   | function                        | yes      |         | A callback function which is used to sort rows.                                           | (val, name, row) => dateToIso(val);        |
 | getFilterValue | function                        | yes      |         | A callback function which is used to filter rows.                                         | (val, name, row) => dateToGermanDate(val); |
 | type           | 'button', 'checkbox', 'color' * | yes      | text    | HTML5 input types. Used to render edit input fields.                                      | type: 'date',                              |
 | editable       | boolean                         | yes      | false   | If `true`, the cell can be edited by double clicking on it.                               | editable: true                             |
