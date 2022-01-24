@@ -19,6 +19,7 @@ export interface Field {
   getSortValue?: (val: any, name: string, row: any) => string;
   getFilterValue?: (val: any, name: string, row: any) => string;
   editable?: boolean;
+  onEdit?: (val: string, field: Field, row: any, index: number) => void;
   disableSorting?: boolean,
   type?: 'button' | 'checkbox' | 'color' | 'date' | 'datetime' | 'email' | 'file' | 'hidden' |
     'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit'
@@ -196,6 +197,13 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     setTableData(rows);
   };
 
+  const handleCommit = (index: number, field: Field, row: any) => {
+    setEditble(undefined)
+    if (field.onEdit) {
+      field.onEdit(row[field.identifier], field, row, index);
+    }
+  }
+
   const getIcon = () => ((sortedBy?.dir === 'a')
     ? <FontAwesomeIcon icon={faAngleUp} />
     : <FontAwesomeIcon icon={faAngleDown} />);
@@ -280,7 +288,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                                 onChange={(e) => handleEditCell(idx, e.target.value, field)}
                                 className="form-control"
                                 value={val}
-                                onBlur={() => setEditble(undefined)}
+                                onBlur={() => handleCommit(idx, field, row)}
                                   />
                             </td>
                           );

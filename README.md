@@ -99,6 +99,7 @@ Interface for column definitions.
 | formatter      | function                        | yes      |         | A callback function which is used to render the cell content.                             | (val, name, row) => <>{'#' + val}</>       |
 | getSortValue   | function                        | yes      |         | A callback function which is used to sort rows.                                           | (val, name, row) => dateToIso(val);        |
 | getFilterValue | function                        | yes      |         | A callback function which is used to filter rows.                                         | (val, name, row) => dateToGermanDate(val); |
+| onEdit         | function                        | yes      |         | A callback function which is called, when the row is edited.                              | (val, field, row, index) => alert(val);    |
 | type           | 'button', 'checkbox', 'color' * | yes      | text    | HTML5 input types. Used to render edit input fields.                                      | type: 'date',                              |
 | editable       | boolean                         | yes      | false   | If `true`, the cell can be edited by double clicking on it.                               | editable: true                             |
 | disableSorting | boolean                         | yes      | false   | If `true`, the cell can be edited by double clicking on it.                               | disableSorting: true                       |
