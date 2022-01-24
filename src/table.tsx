@@ -81,7 +81,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   const [filter, setFilter] = useState<string>(searchParams[identifier] || '');
 
   const [editable, setEditble] = useState<{index: number, field: Field, name: string}>();
-  const [maxIdx, setMaxId] = useState<number>(10);
+  const [maxIdx, setMaxId] = useState<number>(1000);
   const [expanded, setExpanded] = useState<number[]>([]);
 
   const ref = useRef(null);
@@ -103,7 +103,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
 
   const getFilterValue = (field: Field, row: any) => {
     if (!field.getFilterValue) {
-      return row[field.identifier];
+      return row[field.identifier] || '';
     }
     if (row[field.identifier]) {
       return field.getFilterValue(row[field.identifier], field.identifier, row);
@@ -150,7 +150,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
 
   useEffect(() => {
     if (inViewPort && data && maxIdx <= data.length) {
-      setMaxId(maxIdx + 50);
+      setMaxId(maxIdx + 100);
     }
 
     if (data) {
@@ -160,10 +160,10 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
         enriched = data.map((item) => {
           return {
             ...item,
-            sortHash: fields.map(
+            filterHash: fields.map(
               (field: Field) => `${getFilterValue(field, item)}`.toLowerCase()).join(' '),
           };
-        }).filter((item) => item.sortHash.includes(filter.toLocaleLowerCase()) || filter === '');
+        }).filter((item) => item.filterHash.includes(filter.toLocaleLowerCase()) || filter === '');
       }
 
       if (sortedBy) {
