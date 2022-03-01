@@ -231,7 +231,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
               />
             </Col>
             )}
-            { hideResultCount &&
+            { !hideResultCount &&
               <Col className="d-flex flex-row-reverse mt-2">
                 {tableData?.length}
                 {' '}
