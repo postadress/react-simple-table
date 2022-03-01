@@ -109,13 +109,14 @@ Interface for column definitions.
 ### DatatableProps
 Interface to configure the table itself.
 
-| Property   | Type    | Optional | Default  | Purpose                                                                                                                                                          | Example                                               |
-|------------|---------|----------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| fields     | Field[] | no       |          | The field definitions to be used by the table.                                                                                                                   | fields: [{name: 'name', identifier: 'name'}]          |
-| data       | any[]   | no       |          | The data to be presented in the table.                                                                                                                           | [{name: 'Johnny Lawrence'}, {name: 'Daniel LaRusso'}] |
-| showFilter | boolean | yes      | false    | If `true` the filter widget above the table is is visible.                                                                                                       | showFilter: true                                      |
-| identifier | string  | yes      | 'filter' | Used to discriminate different tables on a page. The main purpose is: It is used in the location portion of the URL, to decide, to which table a filter belongs. | identifier: 'mainTable'                               |
-| lang       | string  | yes      | 'en'     | Used for i18n. Currently only English and German is available.                                                                                                   | lang: 'de'                                            |
+| Property        | Type    | Optional | Default  | Purpose                                                                                                                                                          | Example                                               |
+|-----------------|---------|----------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| fields          | Field[] | no       |          | The field definitions to be used by the table.                                                                                                                   | fields: [{name: 'name', identifier: 'name'}]          |
+| data            | any[]   | no       |          | The data to be presented in the table.                                                                                                                           | [{name: 'Johnny Lawrence'}, {name: 'Daniel LaRusso'}] |
+| showFilter      | boolean | yes      | false    | If `true` the filter widget above the table is is visible.                                                                                                       | showFilter: true                                      |
+| hideResultCount | boolean | yes      | false    | If `true` the result count above the table is is invisible.                                                                                                      | hideResultCount: true                                 |
+| identifier      | string  | yes      | 'filter' | Used to discriminate different tables on a page. The main purpose is: It is used in the location portion of the URL, to decide, to which table a filter belongs. | identifier: 'mainTable'                               |
+| lang            | string  | yes      | 'en'     | Used for i18n. Currently only English and German is available.                                                                                                   | lang: 'de'                                            |
 
 You can find a working example on [CodeSandbox](https://codesandbox.io/s/react-simple-table-example-4bfk3?file=/src/Table.tsx).
 

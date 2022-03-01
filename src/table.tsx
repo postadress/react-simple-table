@@ -31,6 +31,7 @@ export interface DatatableProps {
   data: any[],
   onExpand?: (idx: number, row: any) => JSX.Element,
   showFilter?: boolean,
+  hideResultCount?: boolean,
   lang?: string,
   identifier?: string,
 }
@@ -74,7 +75,7 @@ const useCustomSearch = () => {
 
 export const SimpleTable: FC<DatatableProps> = (props) => {
   const {
-    fields, data, onExpand, showFilter, identifier = 'filter', lang = 'en',
+    fields, data, onExpand, showFilter, hideResultCount, identifier = 'filter', lang = 'en',
   } = props;
   const [tableData, setTableData] = useState<any[]>();
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
@@ -230,11 +231,13 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
               />
             </Col>
             )}
-          <Col className="d-flex flex-row-reverse mt-2">
-            {tableData?.length}
-            {' '}
-            { i('results') }
-          </Col>
+            { hideResultCount &&
+              <Col className="d-flex flex-row-reverse mt-2">
+                {tableData?.length}
+                {' '}
+                { i('results') }
+              </Col>
+            }
         </Row>
         <Row>
           <Col>
