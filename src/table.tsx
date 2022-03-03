@@ -216,8 +216,8 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       : setExpanded([...expanded, idx]);
   };
 
-  const handleDownload = () => {
-    const headers = Object.keys(data[0]);
+  const handleDownload = (fields: Field[], data: string[]) => {
+    const headers = fields.map(f => f.name);
     const payload = data.map(item => Object.values(item)).join('\n');
     const csvContent = `data:text/csv;charset=utf-8,${headers}\n${payload}`;
     let encodeUri = encodeURI(csvContent);
@@ -247,7 +247,14 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
 
             { (!hideResultCount || showDownload) &&
               <Col className="d-flex flex-row-reverse mt-2">
-                { showDownload && <button onClick={handleDownload} className='btn btn-secondary ml-3 mr-3'>{ i('download') }</button> }
+                { showDownload && (
+                  <button
+                    disabled={tableData?.length === 0}
+                    onClick={() => handleDownload(fields, tableData || [])}
+                    className='btn btn-secondary ml-3 mr-3'>
+                      { i('download') }
+                    </button>
+                ) }
                 { !hideResultCount &&
                   <span style={{marginRight: 30}}>
                     {' '}
