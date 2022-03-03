@@ -31,6 +31,7 @@ export interface DatatableProps {
   data: any[],
   onExpand?: (idx: number, row: any) => JSX.Element,
   showFilter?: boolean,
+  showDownload?: boolean,
   hideResultCount?: boolean,
   lang?: string,
   identifier?: string,
@@ -75,7 +76,7 @@ const useCustomSearch = () => {
 
 export const SimpleTable: FC<DatatableProps> = (props) => {
   const {
-    fields, data, onExpand, showFilter, hideResultCount, identifier = 'filter', lang = 'en',
+    fields, data, onExpand, showFilter, showDownload, hideResultCount, identifier = 'filter', lang = 'en',
   } = props;
   const [tableData, setTableData] = useState<any[]>();
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
@@ -215,11 +216,23 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       : setExpanded([...expanded, idx]);
   };
 
+  const handleDownload = () => {
+    const headers = Object.keys(data[0]);
+    const payload = data.map(item => Object.values(item)).join('\n');
+    const csvContent = `data:text/csv;charset=utf-8,${headers}\n${payload}`;
+    let encodeUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute('href', encodeUri);
+    link.setAttribute('download', 'report.csv');
+    document.body.appendChild(link);
+    link.click();
+  }
+
   return (
     <>
       <Container fluid>
         <Row>
-          { showFilter
+          { showFilter || showDownload
             && (
             <Col>
               <input
@@ -231,11 +244,18 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
               />
             </Col>
             )}
-            { !hideResultCount &&
+
+            { (!hideResultCount || showDownload) &&
               <Col className="d-flex flex-row-reverse mt-2">
-                {tableData?.length}
-                {' '}
-                { i('results') }
+                { showDownload && <button onClick={handleDownload} className='btn btn-secondary ml-3 mr-3'>{ i('download') }</button> }
+                { !hideResultCount &&
+                  <span style={{marginRight: 30}}>
+                    {' '}
+                    {tableData?.length}
+                    {' '}
+                    { i('results') }
+                  </span>
+                }
               </Col>
             }
         </Row>
