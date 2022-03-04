@@ -232,7 +232,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     <>
       <Container fluid>
         <Row>
-          { showFilter || showDownload
+          { showFilter
             && (
             <Col>
               <input
