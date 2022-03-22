@@ -243,28 +243,29 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                 onChange={(v) => handleFilterChange(v.target.value)}
               />
             </Col>
-            )}
+            )
+          }
 
-            { (!hideResultCount || showDownload) &&
-              <Col className="d-flex flex-row-reverse mt-2">
-                { showDownload && (
-                  <button
-                    disabled={tableData?.length === 0}
-                    onClick={() => handleDownload(fields, tableData || [])}
-                    className='btn btn-secondary ml-3 mr-3'>
-                      { i('download') }
-                    </button>
-                ) }
-                { !hideResultCount &&
-                  <span style={{marginRight: 30}}>
-                    {' '}
-                    {tableData?.length}
-                    {' '}
-                    { i('results') }
-                  </span>
-                }
-              </Col>
-            }
+          { (!hideResultCount || showDownload) &&
+            <Col className="d-flex flex-row-reverse mt-2">
+              { showDownload && (
+                <button
+                  disabled={tableData?.length === 0}
+                  onClick={() => handleDownload(fields, tableData || [])}
+                  className='btn btn-secondary ml-3 mr-3'>
+                    { i('download') }
+                  </button>
+              ) }
+              { !hideResultCount &&
+                <span style={{marginRight: 30}}>
+                  {' '}
+                  {tableData?.length}
+                  {' '}
+                  { i('results') }
+                </span>
+              }
+            </Col>
+          }
         </Row>
         <Row>
           <Col>
