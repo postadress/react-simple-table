@@ -216,9 +216,13 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       : setExpanded([...expanded, idx]);
   };
 
-  const handleDownload = (fields: Field[], data: string[]) => {
-    const headers = fields.map(f => f.name);
-    const payload = data.map(item => Object.values(item)).join('\n');
+  const handleDownload = (csvData: any[]) => {
+    const headers = fields.map(f => f.name).join(';');
+    const payload = csvData.map(item => Object.entries(item).map(([key, value]) => {
+      if (key !== 'filterHash') {
+        return value;
+      }
+    }).join(';')).join('\n');
     const csvContent = `data:text/csv;charset=utf-8,${headers}\n${payload}`;
     let encodeUri = encodeURI(csvContent);
     let link = document.createElement("a");
@@ -251,7 +255,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
               { showDownload && (
                 <button
                   disabled={tableData?.length === 0}
-                  onClick={() => handleDownload(fields, tableData || [])}
+                  onClick={() => handleDownload(tableData || [])}
                   className='btn btn-secondary ml-3 mr-3'>
                     { i('download') }
                   </button>
