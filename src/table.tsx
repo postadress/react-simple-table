@@ -140,6 +140,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   };
 
   const sortData = (field: Field) => {
+    setExpanded([]);
     if (sortedBy && sortedBy.field === field && sortedBy.dir === 'a') {
       const sorted = desc(tableData || [], field);
       setSortedBy({ field, dir: 'd' });
@@ -339,11 +340,12 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                       })}
                     </tr>
                     {onExpand && expanded.includes(idx)
-                          && (
-                          <tr key={`expanded_${idx}`}>
-                            <td colSpan={fields.length + 1}>{ onExpand(idx, row) }</td>
-                          </tr>
-                          )}
+                      && (
+                        <tr key={`expanded_${idx}`}>
+                          <td colSpan={fields.length + 1}>{ onExpand(idx, row) }</td>
+                        </tr>
+                      )
+                    }
                   </Fragment>
                 ))}
               </tbody>
