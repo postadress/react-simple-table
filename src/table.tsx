@@ -35,6 +35,7 @@ export interface DatatableProps {
   hideResultCount?: boolean,
   lang?: string,
   identifier?: string,
+  customDownloadFunction?: (tableData: any[]) => void;
 }
 
 const useIntersection = (ref: MutableRefObject<Element | null>) => {
@@ -76,7 +77,8 @@ const useCustomSearch = () => {
 
 export const SimpleTable: FC<DatatableProps> = (props) => {
   const {
-    fields, data, onExpand, showFilter, showDownload, hideResultCount, identifier = 'filter', lang = 'en',
+    fields, data, onExpand, showFilter, showDownload, hideResultCount, identifier = 'filter',
+    lang = 'en', customDownloadFunction,
   } = props;
   const [tableData, setTableData] = useState<any[]>();
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
@@ -217,7 +219,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       : setExpanded([...expanded, idx]);
   };
 
-  const handleDownload = (csvData: any[]) => {
+  const defaultDownloadFunction = (csvData: any[]) => {
     const headers = fields.map(f => f.name).join(';');
     const payload = csvData.map(item => Object.entries(item).map(([key, value]) => {
       if (key !== 'filterHash') {
@@ -256,7 +258,10 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
               { showDownload && (
                 <button
                   disabled={tableData?.length === 0}
-                  onClick={() => handleDownload(tableData || [])}
+                  onClick={() => (customDownloadFunction !== undefined)
+                    ? customDownloadFunction(tableData)
+                    : defaultDownloadFunction(tableData || [])
+                  }
                   className='btn btn-secondary ml-3 mr-3'>
                     { i('download') }
                   </button>
