@@ -1,6 +1,6 @@
 {
   "name": "@postadress/react-simple-table",
-  "version": "1.0.60",
+  "version": "1.0.64",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
