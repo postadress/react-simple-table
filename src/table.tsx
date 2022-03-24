@@ -188,7 +188,13 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
             filterHash: fields.map(
               (field: Field) => `${getFilterValue(field, item)}`.toLowerCase()).join(' '),
           };
-        }).filter((item) => item.filterHash.includes(filter.toLocaleLowerCase()) || filter === '');
+        })
+        .filter((item) => item.filterHash.includes(filter.toLocaleLowerCase()) || filter === '')
+        .filter((item) => {
+          return fields.map(field => {
+            item[field.identifier] === searchParams[field.identifier] || searchParams[field.identifier] === '' || searchParams[field.identifier] === undefined;
+          }).length > 0;
+        });
       }
 
       if (sortedBy) {
