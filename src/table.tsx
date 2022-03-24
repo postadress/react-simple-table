@@ -95,7 +95,10 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   } = props;
   const [tableData, setTableData] = useState<any[]>();
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
-  const [searchParams, setSearchParams] = useUrlForm(identifier, {'filter': ''});
+
+  const initials = [['filter', ''], ...fields.map(f => [f.identifier, ''])]
+
+  const [searchParams, setSearchParams] = useUrlForm(identifier, Object.fromEntries(initials));
 
   const filter = searchParams['filter'];
   const setFilter = (val: string) => {
