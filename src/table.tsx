@@ -69,10 +69,23 @@ const useIntersection = (ref: MutableRefObject<Element | null>) => {
   return isIntersecting;
 };
 
-const useCustomSearch = () => {
-  const [search, setSearch] = useSearchParams();
-  const searchAsObject = Object.fromEntries(search);
-  return [searchAsObject, setSearch] as const;
+function useUrlForm(paramname: string, initial: any) {
+  const [search, setSearch] = useSearchParams(paramname);
+  const searchAsObject = Object.fromEntries(new URLSearchParams(search));
+
+  if (!searchAsObject[paramname]) {
+    return [{ ...initial }, updateForm]
+  }
+
+  function updateForm (val: Partial<any>) {
+    if (!searchAsObject[paramname]) {
+      setSearch({ [paramname]: JSON.stringify(initial) })
+    } else {
+      const newVal = { ...JSON.parse(searchAsObject[paramname]), ...val };
+      setSearch({ [paramname]: JSON.stringify(newVal) })
+    }
+  }
+  return [JSON.parse(searchAsObject[paramname]), updateForm] as const;
 }
 
 export const SimpleTable: FC<DatatableProps> = (props) => {
@@ -82,8 +95,12 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   } = props;
   const [tableData, setTableData] = useState<any[]>();
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
-  const [searchParams, setSearchParams] = useCustomSearch();
-  const [filter, setFilter] = useState<string>(searchParams[identifier] || '');
+  const [searchParams, setSearchParams] = useUrlForm(identifier, {'filter': ''});
+
+  const filter = searchParams['filter'];
+  const setFilter = (val: string) => {
+    setSearchParams({'filter': val})
+  }
 
   const [editable, setEditble] = useState<{index: number, field: Field, name: string}>();
   const [maxIdx, setMaxId] = useState<number>(1000);
@@ -95,7 +112,6 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   const i = new i18n(lang);
 
   const handleFilterChange = (val: string) => {
-    setSearchParams({...searchParams, [identifier]: val });
     setFilter(val);
   };
 
