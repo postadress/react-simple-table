@@ -97,13 +97,11 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   const [sortedBy, setSortedBy] = useState<{field: Field, dir: string}>();
 
   const initials = [['filter', ''], ...fields.map(f => [f.identifier, ''])]
-
   const [searchParams, setSearchParams] = useUrlForm(identifier, Object.fromEntries(initials));
 
   const filter = searchParams['filter'];
-  const setFilter = (val: string) => {
-    setSearchParams({'filter': val})
-  }
+
+  const [ rowFilter, setRowFilter ] = useState<string>(fields[0].identifier);
 
   const [editable, setEditble] = useState<{index: number, field: Field, name: string}>();
   const [maxIdx, setMaxId] = useState<number>(1000);
@@ -115,7 +113,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   const i = new i18n(lang);
 
   const handleFilterChange = (val: string) => {
-    setFilter(val);
+    setSearchParams({'filter': val});
   };
 
   const getDisplayValue = (field: Field, row: any) => {
@@ -191,9 +189,9 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
         })
         .filter((item) => item.filterHash.includes(filter.toLocaleLowerCase()) || filter === '')
         .filter((item) => {
-          return fields.map(field => {
-            item[field.identifier] === searchParams[field.identifier] || searchParams[field.identifier] === '' || searchParams[field.identifier] === undefined;
-          }).length > 0;
+          return fields.filter(field => {
+            return item[field.identifier] === searchParams[field.identifier] || searchParams[field.identifier] === '';
+          }).length === fields.length;
         });
       }
 
@@ -208,7 +206,15 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       }
       setTableData(enriched);
     }
-  }, [data, filter, inViewPort, maxIdx]);
+  }, [data, filter, ...fields.map(f => searchParams[f.identifier]), inViewPort, maxIdx]);
+
+  useEffect(() => {
+    return function cleanup() {
+      setSearchParams({
+        ...Object.fromEntries([['filter', ''], ...fields.map(f => [f.identifier, ''])])
+      })
+    }
+  }, []);
 
   const handleClick = (e: any, index: number, row: any, name: string, field: Field) => {
     if (e.detail === 2 && field.editable) {
@@ -266,15 +272,57 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
         <Row>
           { showFilter
             && (
-            <Col>
-              <input
-                className="form-control mb-3"
-                placeholder="Filter"
-                value={filter}
-                type="text"
-                onChange={(v) => handleFilterChange(v.target.value)}
-              />
-            </Col>
+              <>
+                <Col>
+                  <input
+                    className="form-control mb-3"
+                    placeholder="Filter"
+                    value={filter}
+                    type="text"
+                    onChange={(v) => handleFilterChange(v.target.value)}
+                  />
+                </Col>
+                <Col>
+                  <select
+                    defaultValue={fields[0].identifier}
+                    className='form-select'
+                    onChange={evt => {
+                      setRowFilter(evt.currentTarget.value);
+                      setSearchParams({
+                        ...Object.fromEntries([['filter', filter], ...fields.map(f => [f.identifier, ''])])
+                      })
+                    }}
+                  >
+                    { fields.map((field, idx) => (
+                      <option
+                        key={idx}
+                        value={ field.identifier }
+                      >
+                        { field.name }
+                      </option>
+                    ))}
+                  </select>
+                </Col>
+                <Col>
+                  <input
+                    className="form-control mb-3"
+                    value={searchParams[rowFilter]}
+                    type="text"
+                    onChange={(v) => setSearchParams({[rowFilter]: v.currentTarget.value})}
+                  />
+                </Col>
+                <Col>
+                  <button
+                    onClick={() =>
+                      setSearchParams({
+                        ...Object.fromEntries([['filter', ''], ...fields.map(f => [f.identifier, ''])])
+                      })
+                    }
+                    className='btn btn-secondary ml-3 mr-3'>
+                      { i('resetfilters') }
+                  </button>
+                </Col>
+              </>
             )
           }
 
