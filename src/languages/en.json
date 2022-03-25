@@ -1,5 +1,7 @@
 {
   "results": "results",
   "download": "Download",
-  "resetfilters": "Reset filters"
+  "resetfilters": "Reset filters",
+  "isempty": "is empty",
+  "isequal": "is equal"
 }

@@ -1,5 +1,7 @@
 {
   "results": "Ergebnisse",
   "download": "Herunterladen",
-  "resetfilters": "Filter zurücksetzen"
+  "resetfilters": "Filter zurücksetzen",
+  "isempty": "ist leer",
+  "isequal": "ist gleich"
 }

@@ -102,6 +102,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   const filter = searchParams['filter'];
 
   const [ rowFilter, setRowFilter ] = useState<string>(fields[0].identifier);
+  const [ rowOperator, setRowOperator ] = useState<string>('isEqual');
 
   const [editable, setEditble] = useState<{index: number, field: Field, name: string}>();
   const [maxIdx, setMaxId] = useState<number>(1000);
@@ -190,7 +191,12 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
         .filter((item) => item.filterHash.includes(filter.toLocaleLowerCase()) || filter === '')
         .filter((item) => {
           return fields.filter(field => {
-            return item[field.identifier] === searchParams[field.identifier] || searchParams[field.identifier] === '';
+            if (rowOperator === 'isEqual') {
+              return item[field.identifier] === searchParams[field.identifier] || searchParams[field.identifier] === '';
+            }
+            if (rowOperator === 'isEmpty') {
+              return item[field.identifier] === '' || item[field.identifier] === null ||  item[field.identifier] === undefined || searchParams[field.identifier] === '';
+            }
           }).length === fields.length;
         });
       }
@@ -206,7 +212,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       }
       setTableData(enriched);
     }
-  }, [data, filter, ...fields.map(f => searchParams[f.identifier]), inViewPort, maxIdx]);
+  }, [data, rowOperator, rowFilter, filter, ...fields.map(f => searchParams[f.identifier]), inViewPort, maxIdx]);
 
   useEffect(() => {
     return function cleanup() {
@@ -215,6 +221,14 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       })
     }
   }, []);
+
+  const resetFilters = () => {
+    setSearchParams({
+      ...Object.fromEntries([['filter', ''], ...fields.map(f => [f.identifier, ''])])
+    })
+    setRowOperator('isEqual');
+    setRowFilter(fields[0].identifier);
+  }
 
   const handleClick = (e: any, index: number, row: any, name: string, field: Field) => {
     if (e.detail === 2 && field.editable) {
@@ -284,10 +298,11 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                 </Col>
                 <Col>
                   <select
-                    defaultValue={fields[0].identifier}
+                    value={rowFilter}
                     className='form-select'
                     onChange={evt => {
                       setRowFilter(evt.currentTarget.value);
+                      setRowOperator('isEqual');
                       setSearchParams({
                         ...Object.fromEntries([['filter', filter], ...fields.map(f => [f.identifier, ''])])
                       })
@@ -303,21 +318,47 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                     ))}
                   </select>
                 </Col>
+
+                <Col>
+                  <select
+                    value={rowOperator}
+                    className='form-select'
+                    onChange={evt => {
+                      setRowOperator(evt.currentTarget.value);
+                      if (evt.currentTarget.value === 'isEmpty') {
+                        setSearchParams({[rowFilter]: "[%empty%]"})
+                      } else {
+                        setSearchParams({[rowFilter]: ""})
+                      }
+                    }}
+                  >
+                    <option
+                      key={1}
+                      value={ 'isEqual' }
+                    >
+                      { i('isequal') }
+                    </option>
+                    <option
+                      key={2}
+                      value={ 'isEmpty' }
+                    >
+                      { i('isempty') }
+                    </option>
+                  </select>
+                </Col>
+
                 <Col>
                   <input
                     className="form-control mb-3"
-                    value={searchParams[rowFilter]}
+                    value={rowOperator === 'isEmpty' ? '' : searchParams[rowFilter]}
+                    disabled={rowOperator === 'isEmpty'}
                     type="text"
                     onChange={(v) => setSearchParams({[rowFilter]: v.currentTarget.value})}
                   />
                 </Col>
                 <Col>
                   <button
-                    onClick={() =>
-                      setSearchParams({
-                        ...Object.fromEntries([['filter', ''], ...fields.map(f => [f.identifier, ''])])
-                      })
-                    }
+                    onClick={() => resetFilters()}
                     className='btn btn-secondary ml-3 mr-3'>
                       { i('resetfilters') }
                   </button>
