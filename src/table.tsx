@@ -79,7 +79,7 @@ function useUrlForm(paramname: string, initial: any) {
 
   function updateForm (val: Partial<any>) {
     if (!searchAsObject[paramname]) {
-      setSearch({ [paramname]: JSON.stringify(initial) })
+      setSearch({ [paramname]: JSON.stringify({...initial, ...val}) })
     } else {
       const newVal = { ...JSON.parse(searchAsObject[paramname]), ...val };
       setSearch({ [paramname]: JSON.stringify(newVal) })
