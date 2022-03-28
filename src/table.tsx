@@ -215,11 +215,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   }, [data, rowOperator, rowFilter, filter, ...fields.map(f => searchParams[f.identifier]), inViewPort, maxIdx]);
 
   useEffect(() => {
-    return function cleanup() {
-      setSearchParams({
-        ...Object.fromEntries([['filter', ''], ...fields.map(f => [f.identifier, ''])])
-      })
-    }
+    resetFilters();
   }, []);
 
   const resetFilters = () => {
