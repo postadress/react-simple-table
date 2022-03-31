@@ -74,15 +74,15 @@ function useUrlForm(paramname: string, initial: any) {
   const searchAsObject = Object.fromEntries(new URLSearchParams(search));
 
   if (!searchAsObject[paramname]) {
-    return [{ ...initial }, updateForm]
+    return [{ ...initial, ...searchAsObject }, updateForm]
   }
 
   function updateForm (val: Partial<any>) {
     if (!searchAsObject[paramname]) {
-      setSearch({ [paramname]: JSON.stringify({...initial, ...val}) })
+      setSearch({...searchAsObject, [paramname]: JSON.stringify({...initial, ...val}) })
     } else {
       const newVal = { ...JSON.parse(searchAsObject[paramname]), ...val };
-      setSearch({ [paramname]: JSON.stringify(newVal) })
+      setSearch({...searchAsObject, [paramname]: JSON.stringify(newVal) })
     }
   }
   return [JSON.parse(searchAsObject[paramname]), updateForm] as const;
