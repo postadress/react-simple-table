@@ -260,6 +260,12 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       : setExpanded([...expanded, idx]);
   };
 
+  const toDateTimeIso = (date: Date): string => {
+    return `${date.getFullYear()}-${(`0${date.getMonth() + 1}`).slice(-2)}-`
+      + `${(`0${date.getDate()}`).slice(-2)} ${(`0${date.getHours()}`).slice(-2)}:`
+      + `${(`0${date.getMinutes()}`).slice(-2)}:${(`0${date.getSeconds()}`).slice(-2)}`;
+  }
+
   const defaultDownloadFunction = (csvData: any[]) => {
     const headers = fields.map(f => f.name).join(';');
     const payload = csvData.map((item) => fields.map((field) => getDisplayValue(field, item))).join('\n');
@@ -267,7 +273,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     let encodeUri = encodeURI(csvContent);
     let link = document.createElement("a");
     link.setAttribute('href', encodeUri);
-    link.setAttribute('download', 'report.csv');
+    link.setAttribute('download', toDateTimeIso(new Date()));
     document.body.appendChild(link);
     link.click();
   }
