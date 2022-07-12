@@ -16,6 +16,7 @@ export interface Field {
   identifier: string;
   width?: number;
   formatter?: (val: any, name: string, row: any) => string | JSX.Element;
+  csvFormatter?: (val: any, name: string, row: any) => string | JSX.Element;
   getSortValue?: (val: any, name: string, row: any) => string;
   getFilterValue?: (val: any, name: string, row: any) => string;
   editable?: boolean;
@@ -122,6 +123,13 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       return row[field.identifier];
     }
     return field.formatter(row[field.identifier], field.name, row);
+  };
+
+  const getCsvDisplayValue = (field: Field, row: any) => {
+    if (field.csvFormatter) {
+      return field.csvFormatter(row[field.identifier], field.name, row)
+    }
+    return getDisplayValue(field, row);
   };
 
   const getFilterValue = (field: Field, row: any) => {
@@ -268,7 +276,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
 
   const defaultDownloadFunction = (csvData: any[]) => {
     const headers = fields.map(f => f.name).join(',');
-    const payload = csvData.map((item) => fields.map((field) => getDisplayValue(field, item))).join('\n');
+    const payload = csvData.map((item) => fields.map((field) => getCsvDisplayValue(field, item))).join('\n');
     const csvContent = `data:text/csv;charset=utf-8,${headers}\n${payload}`;
     let encodeUri = encodeURI(csvContent);
     let link = document.createElement("a");
