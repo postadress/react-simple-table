@@ -267,7 +267,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   }
 
   const defaultDownloadFunction = (csvData: any[]) => {
-    const headers = fields.map(f => f.name).join(';');
+    const headers = fields.map(f => f.name).join(',');
     const payload = csvData.map((item) => fields.map((field) => getDisplayValue(field, item))).join('\n');
     const csvContent = `data:text/csv;charset=utf-8,${headers}\n${payload}`;
     let encodeUri = encodeURI(csvContent);
