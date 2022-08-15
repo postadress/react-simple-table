@@ -194,7 +194,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
 
   useEffect(() => {
 
-    if (onFetchAdditionalResults && inViewPort && maxIdx <= refData.length) {
+    if (onFetchAdditionalResults && inViewPort && refData && maxIdx <= refData.length) {
       onFetchAdditionalResults();
       setMaxId(maxIdx + pageSize);
     }
