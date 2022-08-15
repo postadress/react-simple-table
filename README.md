@@ -103,6 +103,9 @@ Interface for column definitions.
 | type           | 'button', 'checkbox', 'color' * | yes      | text    | HTML5 input types. Used to render edit input fields.                                      | type: 'date',                              |
 | editable       | boolean                         | yes      | false   | If `true`, the cell can be edited by double clicking on it.                               | editable: true                             |
 | disableSorting | boolean                         | yes      | false   | If `true`, the cell can be edited by double clicking on it.                               | disableSorting: true                       |
+| showFilter     | boolean                         | yes      | false   | If `true` the filter input will be visible.                                               | showFilter: true                           |
+| showRowFilters | boolean                         | yes      | false   | If `true` the row filter inputs will be visible.                                          | showRowFilter: true                        |
+| pageSize       | number                          | yes      |         | If provided, it will be used as the total amount of data instead of the data length.      | pageSize: 100                              |
 
 [<font size="2">* 'button' | 'checkbox' | 'color' | 'date' | 'datetime' | 'email' | 'file' | 'hidden' | 'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit' | 'tel' | 'text' | 'time' | 'url' | 'week'</font>](#Content)
 

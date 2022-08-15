@@ -39,6 +39,8 @@ export interface DatatableProps {
   customDownloadFunction?: (tableData: any[]) => void;
   pageSize?: number;
   onFetchAdditionalResults?: () => void;
+  showRowFilters?: boolean;
+  rowCount?: number;
 }
 
 const useIntersection = (ref: MutableRefObject<Element | null>) => {
@@ -93,7 +95,7 @@ function useUrlForm(paramname: string, initial: any) {
 
 export const SimpleTable: FC<DatatableProps> = (props) => {
   const {
-    fields, data, onExpand, showFilter, showDownload, hideResultCount, identifier = 'filter', pageSize = 1000, onFetchAdditionalResults,
+    fields, data, onExpand, showFilter, showDownload, hideResultCount, identifier = 'filter', pageSize = 1000, onFetchAdditionalResults, showRowFilters, rowCount,
     lang = 'en', customDownloadFunction,
   } = props;
   const [tableData, setTableData] = useState<any[]>();
@@ -306,18 +308,19 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     <>
       <Container fluid>
         <Row>
-          { showFilter
-            && (
+          { showFilter &&
+              <Col>
+                <input
+                  className="form-control mb-3"
+                  placeholder="Filter"
+                  value={filter}
+                  type="text"
+                  onChange={(v) => handleFilterChange(v.target.value)}
+                />
+              </Col>
+            }
+            { showRowFilters &&
               <>
-                <Col>
-                  <input
-                    className="form-control mb-3"
-                    placeholder="Filter"
-                    value={filter}
-                    type="text"
-                    onChange={(v) => handleFilterChange(v.target.value)}
-                  />
-                </Col>
                 <Col>
                   <select
                     value={rowFilter}
@@ -368,7 +371,6 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                     </option>
                   </select>
                 </Col>
-
                 <Col>
                   <input
                     className="form-control mb-3"
@@ -378,6 +380,9 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                     onChange={(v) => setSearchParams({[rowFilter]: v.currentTarget.value})}
                   />
                 </Col>
+                </>
+              }
+              { (showFilter || showRowFilters) && (
                 <Col>
                   <button
                     onClick={() => resetFilters()}
@@ -385,15 +390,14 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                       { i('resetfilters') }
                   </button>
                 </Col>
-              </>
-            )
-          }
+              )
+            }
 
           { (!hideResultCount || showDownload) &&
             <Col className="d-flex flex-row-reverse mt-2">
               { showDownload && (
                 <button
-                  disabled={tableData?.length === 0}
+                  disabled={rowCount ? (rowCount === 0) : (tableData?.length === 0)}
                   onClick={() => (customDownloadFunction !== undefined)
                     ? customDownloadFunction(tableData || [])
                     : defaultDownloadFunction(tableData || [])
@@ -405,7 +409,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
               { !hideResultCount &&
                 <span style={{marginRight: 30}}>
                   {' '}
-                  {tableData?.length}
+                  {rowCount ? rowCount : tableData?.length}
                   {' '}
                   { i('results') }
                 </span>
