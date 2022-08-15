@@ -37,6 +37,8 @@ export interface DatatableProps {
   lang?: string,
   identifier?: string,
   customDownloadFunction?: (tableData: any[]) => void;
+  pageSize?: number;
+  onFetchAdditionalResults?: () => void;
 }
 
 const useIntersection = (ref: MutableRefObject<Element | null>) => {
@@ -91,7 +93,7 @@ function useUrlForm(paramname: string, initial: any) {
 
 export const SimpleTable: FC<DatatableProps> = (props) => {
   const {
-    fields, data, onExpand, showFilter, showDownload, hideResultCount, identifier = 'filter',
+    fields, data, onExpand, showFilter, showDownload, hideResultCount, identifier = 'filter', pageSize = 1000, onFetchAdditionalResults,
     lang = 'en', customDownloadFunction,
   } = props;
   const [tableData, setTableData] = useState<any[]>();
@@ -106,13 +108,21 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   const [ rowOperator, setRowOperator ] = useState<string>('isEqual');
 
   const [editable, setEditble] = useState<{index: number, field: Field, name: string}>();
-  const [maxIdx, setMaxId] = useState<number>(1000);
+  const [maxIdx, setMaxId] = useState<number>(pageSize);
   const [expanded, setExpanded] = useState<number[]>([]);
 
   const ref = useRef(null);
   const inViewPort = useIntersection(ref);
 
   const i = new i18n(lang);
+
+  const [refData, setRefData] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (data) {
+      setRefData([...refData, ...data])
+    }
+  }, [data]);
 
   const handleFilterChange = (val: string) => {
     setSearchParams({'filter': val});
@@ -181,15 +191,21 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   };
 
   useEffect(() => {
-    if (inViewPort && data && maxIdx <= data.length) {
-      setMaxId(maxIdx + 100);
+
+    if (onFetchAdditionalResults && inViewPort && maxIdx <= refData.length) {
+      onFetchAdditionalResults();
+      setMaxId(maxIdx + pageSize);
     }
 
-    if (data) {
-      let enriched = data;
+    if (!onFetchAdditionalResults && inViewPort && refData && maxIdx <= refData.length) {
+      setMaxId(maxIdx + pageSize);
+    }
+
+    if (refData) {
+      let enriched = refData;
 
       if (showFilter) {
-        enriched = data.map((item) => {
+        enriched = refData.map((item) => {
           return {
             ...item,
             filterHash: fields.map(
@@ -220,7 +236,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       }
       setTableData(enriched);
     }
-  }, [data, rowOperator, rowFilter, filter, ...fields.map(f => searchParams[f.identifier]), inViewPort, maxIdx]);
+  }, [refData, rowOperator, rowFilter, filter, ...fields.map(f => searchParams[f.identifier]), inViewPort, maxIdx]);
 
   useEffect(() => {
     resetFilters();
@@ -379,7 +395,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                 <button
                   disabled={tableData?.length === 0}
                   onClick={() => (customDownloadFunction !== undefined)
-                    ? customDownloadFunction(tableData)
+                    ? customDownloadFunction(tableData || [])
                     : defaultDownloadFunction(tableData || [])
                   }
                   className='btn btn-secondary ml-3 mr-3'>
