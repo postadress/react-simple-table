@@ -102,10 +102,6 @@ Interface for column definitions.
 | onEdit         | function                        | yes      |         | A callback function which is called, when the row is edited.                              | (val, field, row, index) => alert(val);    |
 | type           | 'button', 'checkbox', 'color' * | yes      | text    | HTML5 input types. Used to render edit input fields.                                      | type: 'date',                              |
 | editable       | boolean                         | yes      | false   | If `true`, the cell can be edited by double clicking on it.                               | editable: true                             |
-| disableSorting | boolean                         | yes      | false   | If `true`, the cell can be edited by double clicking on it.                               | disableSorting: true                       |
-| showFilter     | boolean                         | yes      | false   | If `true` the filter input will be visible.                                               | showFilter: true                           |
-| showRowFilters | boolean                         | yes      | false   | If `true` the row filter inputs will be visible.                                          | showRowFilter: true                        |
-| pageSize       | number                          | yes      |         | If provided, it will be used as the total amount of data instead of the data length.      | pageSize: 100                              |
 
 [<font size="2">* 'button' | 'checkbox' | 'color' | 'date' | 'datetime' | 'email' | 'file' | 'hidden' | 'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit' | 'tel' | 'text' | 'time' | 'url' | 'week'</font>](#Content)
 
@@ -124,6 +120,10 @@ Interface to configure the table itself.
 | customDownloadFunction   | (tableData: any[]) => void | yes      |          | Callback function, which will be triggered when clicking the download button (`showDownload` must be set to true)                                                              | customDownloadFunction: (tableData: any[]) => apiCall()   |
 | pageSize                 | number                     | yes      | 1000     | Amount of rows which will be presented in viewport before rerendering the next chunk. When `onFetchAdditionalResults` is set, it will be triggered when the amount is reached. | pageSize: 100                                             |
 | onFetchAdditionalResults | () => void                 | yes      |          | Callback function which will be triggered when the user scolls to the bottom to the table. Uses `pageSize`.                                                                    | onFetchAdditionalResults: (tableData: any[]) => apiCall() |
+| disableSorting           | boolean                    | yes      | false    | If `true`, the cell can be edited by double clicking on it.                                                                                                                    | disableSorting: true                                      |
+| showRowFilters           | boolean                    | yes      | false    | If `true` the row filter inputs will be visible.                                                                                                                               | showRowFilter: true                                       |
+| pageSize                 | number                     | yes      |          | If provided, it will be used as the total amount of data instead of the data length.                                                                                           | pageSize: 100                                             |
+
 
 You can find a working example on [CodeSandbox](https://codesandbox.io/s/react-simple-table-example-4bfk3?file=/src/Table.tsx).
 
