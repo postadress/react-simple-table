@@ -193,8 +193,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
   };
 
   useEffect(() => {
-
-    if (onFetchAdditionalResults && inViewPort && refData && maxIdx <= refData.length) {
+    if (onFetchAdditionalResults && inViewPort && refData) {
       onFetchAdditionalResults();
       setMaxId(maxIdx + pageSize);
     }
@@ -202,7 +201,9 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
     if (!onFetchAdditionalResults && inViewPort && refData && maxIdx <= refData.length) {
       setMaxId(maxIdx + pageSize);
     }
+  }, [inViewPort])
 
+  useEffect(() => {
     if (refData) {
       let enriched = refData;
 
@@ -238,7 +239,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       }
       setTableData(enriched);
     }
-  }, [refData, rowOperator, rowFilter, filter, ...fields.map(f => searchParams[f.identifier]), inViewPort, maxIdx]);
+  }, [refData, rowOperator, rowFilter, filter, ...fields.map(f => searchParams[f.identifier]), maxIdx]);
 
   useEffect(() => {
     resetFilters();
@@ -470,7 +471,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
                                 className="form-control"
                                 value={val}
                                 onBlur={() => handleCommit(idx, field, row)}
-                                  />
+                              />
                             </td>
                           );
                         }
