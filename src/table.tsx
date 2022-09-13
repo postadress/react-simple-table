@@ -219,7 +219,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
         .filter((item) => {
           return fields.filter(field => {
             if (rowOperator === 'isEqual') {
-              return `${item[field.identifier]}` === `${searchParams[field.identifier]}` || `${searchParams[field.identifier]}` === '';
+              return `${getFilterValue(field, item)}` === `${searchParams[field.identifier]}` || `${searchParams[field.identifier]}` === '';
             }
             if (rowOperator === 'isEmpty') {
               return item[field.identifier] === '' || item[field.identifier] === null ||  item[field.identifier] === undefined || searchParams[field.identifier] === '';
