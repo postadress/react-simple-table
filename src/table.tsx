@@ -21,10 +21,11 @@ export interface Field {
   getFilterValue?: (val: any, name: string, row: any) => string;
   editable?: boolean;
   onEdit?: (val: string, field: Field, row: any, index: number) => void;
-  disableSorting?: boolean,
+  disableSorting?: boolean;
   type?: 'button' | 'checkbox' | 'color' | 'date' | 'datetime' | 'email' | 'file' | 'hidden' |
     'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit'
-    | 'tel' | 'text' | 'time' | 'url' | 'week'
+    | 'tel' | 'text' | 'time' | 'url' | 'week';
+  setRowClass?: (val: any, name: string, row: any) => void;
 }
 
 export interface DatatableProps {
@@ -208,11 +209,13 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
       let enriched = refData;
 
       if (showFilter) {
-        enriched = refData.map((item) => {
+        enriched = refData.map((row) => {
           return {
-            ...item,
+            ...row,
+            rowClass: fields.map(
+              (field: Field) => `${field.setRowClass ? field.setRowClass(row[field.identifier] || '', field.identifier, row) : ''}`).join(' '),
             filterHash: fields.map(
-              (field: Field) => `${getFilterValue(field, item)}`.toLowerCase()).join(' '),
+              (field: Field) => `${getFilterValue(field, row)}`.toLowerCase()).join(' '),
           };
         })
         .filter((item) => item.filterHash.includes(filter.toLocaleLowerCase()) || filter === '')
@@ -446,7 +449,7 @@ export const SimpleTable: FC<DatatableProps> = (props) => {
               <tbody>
                 {tableData && tableData.slice(0, maxIdx).map((row, idx) => (
                   <Fragment key={idx}>
-                    <tr className="align-middle">
+                    <tr className={`align-middle ${row.rowClass}`}>
                       { onExpand
                             && (
                             <td
