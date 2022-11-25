@@ -10,8 +10,8 @@
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
     "@fortawesome/react-fontawesome": "0.1.16",
-    "@types/react": "17.0.3",
-    "react-bootstrap": "2.1.1",
+    "@types/react": "18.0.25",
+    "react-bootstrap": "2.6.0",
     "react-router-dom": "6.2.1",
     "bootstrap": "5.1.3"
   },
